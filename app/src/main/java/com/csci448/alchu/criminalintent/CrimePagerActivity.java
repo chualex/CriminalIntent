@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.Button;
 
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,10 @@ import java.util.UUID;
 public class CrimePagerActivity extends AppCompatActivity {
     private ViewPager mViewPager;
     private List<Crime> mCrimes;
+    private Button mFirstCrimeButton;
+    private Button mLastCrimeButton;
+
+
     private static final String EXTRA_CRIME_ID = "com.csci448.alchu.criminalintent.crime_id";
     public static Intent newIntent(Context packageContext, UUID crimeId) {
         Intent intent = new Intent(packageContext, CrimePagerActivity.class);
@@ -40,6 +46,7 @@ public class CrimePagerActivity extends AppCompatActivity {
                 Crime crime = mCrimes.get(position);
                 return CrimeFragment.newInstance(crime.getId());
             }
+
             @Override
             public int getCount() {
                 return mCrimes.size();
@@ -48,9 +55,58 @@ public class CrimePagerActivity extends AppCompatActivity {
         for (int i = 0; i < mCrimes.size(); i++) {
             if (mCrimes.get(i).getId().equals(crimeId)) {
                 mViewPager.setCurrentItem(i);
-                break; }
+                break;
+            }
         }
+        mFirstCrimeButton = (Button) findViewById(R.id.first_button);
+        mFirstCrimeButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mViewPager.setCurrentItem(0);
+            }
+
+        });
+
+        mLastCrimeButton = (Button) findViewById(R.id.last_button);
+        mLastCrimeButton.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                mViewPager.setCurrentItem(mCrimes.size() - 1);
+            }
+
+        });
+        mViewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+                if (mViewPager.getAdapter().getCount() == 0 || mViewPager.getCurrentItem() <= 0) {
+                    mFirstCrimeButton.setVisibility(View.INVISIBLE);
+                } else {
+                    mFirstCrimeButton.setVisibility(View.VISIBLE);
+                }
+
+                if (mViewPager.getAdapter().getCount() == 0 || mViewPager.getCurrentItem() == mViewPager.getAdapter().getCount() - 1) {
+                    mLastCrimeButton.setVisibility(View.INVISIBLE);
+                } else {
+                    mLastCrimeButton.setVisibility(View.VISIBLE);
+                }
+            }
+
+
+            @Override
+            public void onPageSelected(int position) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
+
     }
+
 
 
 }
